@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Ting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --deep1:#0b0518; --deep2:#1c0f36; --deep3:#2c1852;
+  --rose:#ff7aa8; --rose-light:#ffd0e2; --gold:#f5cd6b; --cream:#fff8f2;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow-x:hidden;}
+body{
+  background:radial-gradient(ellipse at center, var(--deep3), var(--deep1));
+  color:var(--cream); font-family:'Quicksand',sans-serif;
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  text-align:center; position:relative; padding:30px 20px;
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
+}
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.star{position:absolute;background:var(--cream);border-radius:50%;animation:twinkle 3s ease-in-out infinite;}
+@keyframes twinkle{0%,100%{opacity:0.15;}50%{opacity:0.9;}}
+
+.drift-field{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden;}
+.drift{position:absolute;bottom:-8%;animation:rise linear infinite;opacity:0.8;}
+@keyframes rise{
+  0%{transform:translateY(0) translateX(0) rotate(0deg);opacity:0;}
+  10%{opacity:0.85;}
+  100%{transform:translateY(-112vh) translateX(var(--d,20px)) rotate(320deg);opacity:0;}
+}
+
+.card{
+  position:relative; z-index:3; max-width:520px; width:100%;
+  background:rgba(255,248,242,0.05); border:1px solid rgba(255,208,226,0.25);
+  border-radius:24px; padding:50px 32px; backdrop-filter:blur(10px);
+  box-shadow:0 20px 60px rgba(0,0,0,0.4);
+}
+.eyebrow{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);
+  opacity:0;animation:fadeUp 1s ease forwards 0.2s;}
+h1{
+  font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;
+  font-size:clamp(2rem,6vw,2.8rem);margin:14px 0 20px;color:var(--cream);
+  text-shadow:0 0 25px rgba(255,122,168,0.35);
+  opacity:0;animation:fadeUp 1s ease forwards 0.5s;
+}
+.msg{
+  font-size:1.05rem;line-height:1.85;color:var(--rose-light);margin-bottom:10px;
+  opacity:0;animation:fadeUp 1s ease forwards 0.9s;
+}
+.msg.q{
+  margin-top:22px;font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:1.5rem;color:var(--cream);
+  opacity:0;animation:fadeUp 1s ease forwards 1.4s;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+.btn-row{
+  margin-top:36px; display:flex; gap:20px; justify-content:center; align-items:center;
+  flex-wrap:wrap; position:relative; min-height:70px;
+  opacity:0; animation:fadeUp 1s ease forwards 1.9s;
+}
+button{font-family:'Quicksand';font-weight:700;font-size:1.05rem;border:none;border-radius:40px;
+  padding:15px 36px;cursor:pointer;transition:transform .2s ease, box-shadow .2s ease;}
+#yesBtn{
+  background:linear-gradient(135deg,var(--rose),var(--gold));color:#2c1852;
+  box-shadow:0 10px 26px rgba(255,122,168,0.35);
+}
+#yesBtn:hover{transform:scale(1.08);box-shadow:0 14px 32px rgba(255,122,168,0.5);}
+#noBtn{
+  background:rgba(255,248,242,0.08);color:var(--cream);border:1px solid rgba(255,248,242,0.25);
+  position:relative;
+}
+
+.hidden{display:none !important;}
+
+#revealScreen{
+  opacity:0; transform:scale(0.9); transition:opacity .6s ease, transform .6s cubic-bezier(.34,1.56,.64,1);
+}
+#revealScreen.show{opacity:1; transform:scale(1);}
+.big-heart{font-size:3.5rem;animation:pulse 1.6s ease-in-out infinite;margin-bottom:14px;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.12);}}
+.ig-note{
+  margin-top:24px;padding:14px 20px;border-radius:14px;
+  background:rgba(245,205,107,0.1);border:1px solid rgba(245,205,107,0.3);
+  font-size:0.95rem;color:var(--gold);
+}
+.ig-note b{color:var(--cream);}
+
+#confettiCanvas{position:fixed;inset:0;z-index:50;pointer-events:none;}
+</style>
+</head>
+<body>
+
+<div id="stars"></div>
+<div class="drift-field" id="driftField"></div>
+<canvas id="confettiCanvas"></canvas>
+
+<div class="card">
+  <div id="askScreen">
+    <div class="eyebrow">to Ting</div>
+    <h1>Hey Ting</h1>
+    <p class="msg">I know we haven't talked in a while, but I couldn't stop thinking about asking you this.</p>
+    <p class="msg q">Will you be my girlfriend?</p>
+    <div class="btn-row">
+      <button id="yesBtn" onclick="sayYes()">Yes 💕</button>
+      <button id="noBtn" onmouseenter="dodge(this)" ontouchstart="dodge(this)" onclick="dodge(this)">No</button>
+    </div>
+  </div>
+
+  <div id="revealScreen">
+    <div class="big-heart">💖</div>
+    <h1 style="margin-bottom:10px;">She said yes!</h1>
+    <p class="msg" style="opacity:1;animation:none;">You just made my whole year. I can't wait to see where this goes.</p>
+    <div class="ig-note">Make sure to tell me your answer on <b>Instagram</b> too 👀</div>
+  </div>
+</div>
+
+<script>
+/* stars */
+const starsEl=document.getElementById('stars');
+for(let i=0;i<70;i++){
+  const s=document.createElement('div');s.className='star';
+  const size=Math.random()*2+1;
+  s.style.width=size+'px';s.style.height=size+'px';
+  s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';
+  s.style.animationDelay=(Math.random()*3)+'s';
+  s.style.animationDuration=(2+Math.random()*3)+'s';
+  starsEl.appendChild(s);
+}
+
+/* drifting hearts */
+const driftField=document.getElementById('driftField');
+const symbols=['♥','❤','✦'];
+function spawnDrift(){
+  const d=document.createElement('div');
+  d.className='drift';d.textContent=symbols[Math.floor(Math.random()*symbols.length)];
+  d.style.left=Math.random()*100+'%';
+  d.style.setProperty('--d',(Math.random()*80-40)+'px');
+  const dur=9+Math.random()*7;
+  d.style.animationDuration=dur+'s';
+  d.style.fontSize=(12+Math.random()*16)+'px';
+  d.style.color=['#ff7aa8','#ffd0e2','#f5cd6b'][Math.floor(Math.random()*3)];
+  driftField.appendChild(d);
+  setTimeout(()=>d.remove(),dur*1000);
+}
+for(let i=0;i<8;i++) setTimeout(spawnDrift,i*500);
+setInterval(spawnDrift,900);
+
+/* No button dodges */
+function dodge(btn){
+  const row=btn.parentElement.getBoundingClientRect();
+  const maxX = row.width/2 - 60;
+  const maxY = 40;
+  const x = (Math.random()*2-1)*maxX;
+  const y = (Math.random()*2-1)*maxY;
+  btn.style.position='relative';
+  btn.style.transform = `translate(${x}px, ${y}px)`;
+  const msgs=['No','Nope','Try again?','Are you sure?','Really?','Come on 🥺','Pick yes!'];
+  btn.textContent = msgs[Math.min(Math.floor(Math.random()*msgs.length),msgs.length-1)];
+}
+
+function sayYes(){
+  document.getElementById('askScreen').classList.add('hidden');
+  const reveal=document.getElementById('revealScreen');
+  reveal.classList.add('show');
+  burstConfetti();
+  setTimeout(burstConfetti, 500);
+}
+
+/* confetti */
+const canvas=document.getElementById('confettiCanvas');
+const ctx=canvas.getContext('2d');
+function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+resize();
+window.addEventListener('resize',resize);
+let pieces=[];
+const colors=['#ff7aa8','#f5cd6b','#ffd0e2','#fff8f2','#c9a6ff'];
+function burstConfetti(){
+  for(let i=0;i<140;i++){
+    pieces.push({
+      x:canvas.width/2, y:canvas.height/2,
+      vx:(Math.random()-0.5)*14, vy:(Math.random()-1.2)*14,
+      size:5+Math.random()*6, color:colors[Math.floor(Math.random()*colors.length)],
+      rot:Math.random()*360, vr:(Math.random()-0.5)*12, life:0
+    });
+  }
+}
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  pieces.forEach(p=>{
+    p.vy+=0.25;p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;p.life++;
+    ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);
+    ctx.fillStyle=p.color;ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*0.6);ctx.restore();
+  });
+  pieces=pieces.filter(p=>p.life<220 && p.y<canvas.height+50);
+  requestAnimationFrame(animate);
+}
+animate();
+</script>
+</body>
+</html>
